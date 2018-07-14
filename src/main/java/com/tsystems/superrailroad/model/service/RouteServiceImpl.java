@@ -6,6 +6,8 @@ import main.java.com.tsystems.superrailroad.model.dao.StationDao;
 import main.java.com.tsystems.superrailroad.model.dao.TrainDao;
 import main.java.com.tsystems.superrailroad.model.dto.RouteDto;
 import main.java.com.tsystems.superrailroad.model.dto.RouteHasStationDto;
+import main.java.com.tsystems.superrailroad.model.dto.StationDto;
+import main.java.com.tsystems.superrailroad.model.dto.TrainDto;
 import main.java.com.tsystems.superrailroad.model.entity.Route;
 import main.java.com.tsystems.superrailroad.model.entity.RouteHasStation;
 import main.java.com.tsystems.superrailroad.model.entity.Station;
@@ -52,5 +54,35 @@ public class RouteServiceImpl implements RouteService {
             routeHasStation.setRoute(route);
             routeHasStationDao.create(routeHasStation);
         }
+    }
+
+    @Override
+    @Transactional
+    public List<RouteDto> getAllRoutes() {
+        List<RouteDto> routeDtoList = new ArrayList<>();
+        List<Route> routes = routeDao.readAll();
+
+        for (Route route : routes){
+            RouteDto routeDto = new RouteDto();
+            routeDto.setRouteId(route.getRouteId());
+            TrainDto trainDto = mapper.map(route.getTrain(), TrainDto.class);
+            routeDto.setTrainDto(trainDto);
+
+            List<RouteHasStationDto> routeHasStationDtoList = new ArrayList<>();
+            List<RouteHasStation> routeHasStationList = routeHasStationDao.getStationsByRoute(route);
+
+            for (RouteHasStation routeHasStation : routeHasStationList){
+                RouteHasStationDto routeHasStationDto = new RouteHasStationDto();
+                routeHasStationDto.setId(routeHasStation.getId());
+                routeHasStationDto.setStationOrder(routeHasStation.getStationOrder());
+                routeHasStationDto.setStationDto(mapper.map(routeHasStation.getStation(), StationDto.class));
+                routeHasStationDtoList.add(routeHasStationDto);
+            }
+
+            routeDto.setRouteHasStationDtoList(routeHasStationDtoList);
+            routeDtoList.add(routeDto);
+        }
+
+        return routeDtoList;
     }
 }

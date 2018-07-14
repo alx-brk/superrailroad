@@ -15,7 +15,7 @@
 <nav class="navbar navbar-toggleable-md sticky-top navbar-my navbar-inverse">
     <ul class="navbar-nav mr-auto">
         <li class="nav-item">
-            <a class="btn btn-primary btn-my" href="#" role="button">Home</a>
+            <a class="btn btn-primary btn-my" href="/" role="button">Home</a>
         </li>
     </ul>
     <ul class="navbar-nav ml-auto">
@@ -40,14 +40,14 @@
             <div class="col-md-12">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a class="nav-link" href="/adminCreateStation">Add station</a>
+                        <a class="nav-link" href="/admin/createStation">Add station</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/adminCreateTrain" class="active nav-link">
+                        <a href="/admin/createTrain" class="active nav-link">
                             <i class="fa fa-home fa-home"></i>&nbsp;Add train</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Schedule ride</a>
+                        <a class="nav-link" href="/admin/createRide">Schedule ride</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Train info</a>

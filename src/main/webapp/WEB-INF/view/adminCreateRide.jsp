@@ -40,14 +40,14 @@
             <div class="col-md-12">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a href="/admin/createStation" class="active nav-link">
-                            <i class="fa fa-home fa-home"></i>&nbsp;Add station</a>
+                        <a class="nav-link" href="/admin/createStation">Add station</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/admin/createTrain">Add train</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/createRide">Schedule ride</a>
+                        <a href="/admin/createRide" class="active nav-link">
+                            <i class="fa fa-home fa-home"></i>&nbsp;Schedule ride</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#">Train info</a>
@@ -58,40 +58,68 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card-body p-5 card-my">
-                    <h3 class="pb-3">Add new station</h3>
+                    <h3 class="pb-3">Add new train</h3>
                     <form>
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-md-4 my-select">
-                                    <label>Station</label>
-                                    <input placeholder="Station" list="listStation" class="form-control" id="station">
-                                    <datalist id="listStation">
-                                        <c:forEach items="${stationJSPList}" var="station">
-                                            <option value="${station.name}"/>
+                                <div class="col-md-5 my-select">
+                                    <label>Route</label>
+                                    <input placeholder="Route" list="listRoute" class="form-control" id="route">
+                                    <datalist id="listRoute">
+                                        <c:forEach items="${routeJSPList}" var="route">
+                                            <option value="${route.routeId}"/>
                                         </c:forEach>
                                     </datalist>
                                 </div>
-                                <div class="col-md-4">
-                                    <label>Distance</label>
-                                    <input class="form-control" type="number" id="distance">
+                                <div class="col-md-2">
                                 </div>
-                                <div class="col-md-4 my-select">
-                                    <label>New station</label>
-                                    <input class="form-control" placeholder="New station" id="newStation">
+                                <div class="col-md-5 my-select">
+                                    <label>Departure Date and Time</label>
+                                    <input type='datetime-local' class="form-control" id="departure" />
                                 </div>
                             </div>
-                            <div class="form-group">
+                            <div class="form-group" id="buttons">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="createStation()">Add station</button>
+                                        <button class="btn btn-primary btn-my" type="button" onclick="">Schedule</button>
                                     </div>
                                 </div>
                             </div>
                             <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Station was created
+                                Ride was created
                             </div>
                             <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Station wasn't created due to error
+                                Ride wasn't created due to error
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Capacity</th>
+                                        <th scope="col">Price for km</th>
+                                        <th scope="col">Speed m/s</th>
+                                        <th scope="col">Station</th>
+                                        </thead>
+                                        <tbody>
+                                        <tr>
+                                            <c:forEach items="${routeJSPList}" var="route">
+                                                <th scope="row">${route.routeId}</th>
+                                                <td>${route.trainDto.capacity}</td>
+                                                <td>${route.trainDto.priceForKm}</td>
+                                                <td>${route.trainDto.speed}</td>
+                                                <td>
+                                                    <ol>
+                                                        <c:forEach items="${route.routeHasStationDtoList}" var="station">
+                                                            <li>${station.stationDto.name}</li>
+                                                        </c:forEach>
+                                                    </ol>
+                                                </td>
+                                            </c:forEach>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </form>

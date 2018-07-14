@@ -14,7 +14,7 @@ public class RouteHasStation {
     @Column(name = "station_order")
     private int stationOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "station_id")
     private Station station;
 

@@ -68,5 +68,45 @@ CREATE TABLE IF NOT EXISTS `railroad`.`route_has_Station` (
     REFERENCES `railroad`.`Station` (`station_id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION);
+
+    CREATE TABLE IF NOT EXISTS `railroad`.`ride` (
+  `ride_id` INT NOT NULL AUTO_INCREMENT,
+  `route_id` INT NOT NULL,
+  `departure` DATETIME NOT NULL,
+  PRIMARY KEY (`ride_id`),
+  INDEX `fk_ride_route1_idx` (`route_id` ASC),
+  CONSTRAINT `fk_ride_route1`
+    FOREIGN KEY (`route_id`)
+    REFERENCES `railroad`.`route` (`route_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
+
+   CREATE TABLE IF NOT EXISTS `railroad`.`User_` (
+  `login` VARCHAR(45) NOT NULL,
+  `password` VARCHAR(45) NOT NULL,
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`user_id`));
+
+  CREATE TABLE IF NOT EXISTS `railroad`.`role` (
+  `role` VARCHAR(45) NOT NULL,
+  `role_id` INT NOT NULL AUTO_INCREMENT,
+  PRIMARY KEY (`role_id`));
+
+  CREATE TABLE IF NOT EXISTS `railroad`.`User__has_role` (
+  `User__user_id` INT NOT NULL,
+  `role_role_id` INT NOT NULL,
+  PRIMARY KEY (`User__user_id`, `role_role_id`),
+  INDEX `fk_User__has_role_role1_idx` (`role_role_id` ASC),
+  INDEX `fk_User__has_role_User_1_idx` (`User__user_id` ASC),
+  CONSTRAINT `fk_User__has_role_User_1`
+    FOREIGN KEY (`User__user_id`)
+    REFERENCES `railroad`.`User_` (`user_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_User__has_role_role1`
+    FOREIGN KEY (`role_role_id`)
+    REFERENCES `railroad`.`role` (`role_id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION);
     
     insert into station(name) values ("Saint-Petersburg");

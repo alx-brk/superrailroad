@@ -15,7 +15,7 @@
     <nav class="navbar navbar-toggleable-md sticky-top navbar-my navbar-inverse">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-                <a class="btn btn-primary btn-my" href="/adminCreateStation" role="button">Admin</a>
+                <a class="btn btn-primary btn-my" href="/admin/createStation" role="button">Admin</a>
             </li>
         </ul>
         <ul class="navbar-nav ml-auto">

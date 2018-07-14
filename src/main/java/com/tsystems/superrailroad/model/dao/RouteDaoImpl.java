@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class RouteDaoImpl implements RouteDao {
@@ -36,5 +37,10 @@ public class RouteDaoImpl implements RouteDao {
     public void delete(Integer id) {
         entityManager.remove(entityManager.getReference(Route.class, id));
         entityManager.close();
+    }
+
+    @Override
+    public List<Route> readAll() {
+        return entityManager.createQuery("select r from route r", Route.class).getResultList();
     }
 }

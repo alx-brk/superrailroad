@@ -1,8 +1,6 @@
 package main.java.com.tsystems.superrailroad.model.entity;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(name = "route")
 @Table(name = "route")

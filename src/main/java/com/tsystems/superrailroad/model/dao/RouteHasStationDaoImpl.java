@@ -1,10 +1,12 @@
 package main.java.com.tsystems.superrailroad.model.dao;
 
+import main.java.com.tsystems.superrailroad.model.entity.Route;
 import main.java.com.tsystems.superrailroad.model.entity.RouteHasStation;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.List;
 
 @Repository
 public class RouteHasStationDaoImpl implements RouteHasStationDao {
@@ -36,5 +38,12 @@ public class RouteHasStationDaoImpl implements RouteHasStationDao {
     public void delete(Integer id) {
         entityManager.remove(entityManager.getReference(RouteHasStation.class, id));
         entityManager.close();
+    }
+
+    @Override
+    public List<RouteHasStation> getStationsByRoute(Route route) {
+        return entityManager.createQuery("select r from RouteHasStation r where r.route = :route order by r.stationOrder asc", RouteHasStation.class)
+                            .setParameter("route", route)
+                            .getResultList();
     }
 }
