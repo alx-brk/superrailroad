@@ -2,4 +2,6 @@
 2. Clone project in idea.
 
 Extra:
-SET GLOBAL time_zone = '+03:00'; --helps you to solve problem with timezone
+1. SET GLOBAL time_zone = '+00:00'; --helps you to solve problem with timezone
+2. user - admin, password - admin
+    
