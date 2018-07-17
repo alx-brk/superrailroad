@@ -20,10 +20,7 @@
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="#">Sign In</a>
-        </li>
-        <li class="nav-item">
-            <a class="btn btn-primary btn-my" href="#" role="button">Sign Up</a>
+            <a class="btn btn-primary btn-my" href="/logout" role="button">Log out</a>
         </li>
     </ul>
 </nav>
@@ -50,7 +47,7 @@
                         <a class="nav-link" href="/admin/createRide">Schedule ride</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Train info</a>
+                        <a class="nav-link" href="/admin/trainInfo">Train info</a>
                     </li>
                 </ul>
             </div>

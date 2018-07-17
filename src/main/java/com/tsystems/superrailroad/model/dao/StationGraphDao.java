@@ -11,4 +11,5 @@ public interface StationGraphDao {
     void update(StationGraph stationGraph);
     void delete(Integer id);
     List<Station> getConnectedStations(Station station);
+    StationGraph find(Station station, Station stationRef);
 }

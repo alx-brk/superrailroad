@@ -20,10 +20,7 @@
     </ul>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <a class="nav-link" href="#">Sign In</a>
-        </li>
-        <li class="nav-item">
-            <a class="btn btn-primary btn-my" href="#" role="button">Sign Up</a>
+            <a class="btn btn-primary btn-my" href="/logout" role="button">Log out</a>
         </li>
     </ul>
 </nav>
@@ -50,7 +47,7 @@
                             <i class="fa fa-home fa-home"></i>&nbsp;Schedule ride</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Train info</a>
+                        <a class="nav-link" href="/admin/trainInfo">Train info</a>
                     </li>
                 </ul>
             </div>
@@ -81,7 +78,7 @@
                             <div class="form-group" id="buttons">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="">Schedule</button>
+                                        <button class="btn btn-primary btn-my" type="button" onclick="createRide()">Schedule</button>
                                     </div>
                                 </div>
                             </div>
@@ -102,8 +99,8 @@
                                         <th scope="col">Station</th>
                                         </thead>
                                         <tbody>
-                                        <tr>
-                                            <c:forEach items="${routeJSPList}" var="route">
+                                        <c:forEach items="${routeJSPList}" var="route">
+                                            <tr>
                                                 <th scope="row">${route.routeId}</th>
                                                 <td>${route.trainDto.capacity}</td>
                                                 <td>${route.trainDto.priceForKm}</td>
@@ -115,8 +112,8 @@
                                                         </c:forEach>
                                                     </ol>
                                                 </td>
-                                            </c:forEach>
-                                        </tr>
+                                            </tr>
+                                        </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
@@ -132,8 +129,10 @@
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
 <spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/create_ride_extra.js" var="railroadExtraJS"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
 <script src="${railroadJS}"></script>
+<script src="${railroadExtraJS}"></script>
 </body>
 </html>

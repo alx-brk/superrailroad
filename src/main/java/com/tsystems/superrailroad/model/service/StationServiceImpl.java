@@ -6,6 +6,7 @@ import main.java.com.tsystems.superrailroad.model.dto.StationDto;
 import main.java.com.tsystems.superrailroad.model.dto.StationGraphDto;
 import main.java.com.tsystems.superrailroad.model.entity.Station;
 import main.java.com.tsystems.superrailroad.model.entity.StationGraph;
+import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StationServiceImpl implements StationService {
+    private static final Logger log = Logger.getLogger(StationServiceImpl.class);
     private StationDao stationDao;
     private StationGraphDao stationGraphDao;
     private ModelMapper mapper;
@@ -62,7 +64,7 @@ public class StationServiceImpl implements StationService {
 
         stationGraphDao.create(stationGraphForward);
         stationGraphDao.create(stationGraphBackward);
-
+        log.info("New station was created " + newStation.getName());
     }
 
     @Override

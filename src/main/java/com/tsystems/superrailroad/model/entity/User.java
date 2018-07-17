@@ -19,7 +19,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "user__has_role", joinColumns = @JoinColumn(name = "user__user_id"), inverseJoinColumns = @JoinColumn(name = "role_role_id"))
     private List<Role> roles = new ArrayList<>();
 
@@ -53,5 +53,10 @@ public class User {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public void addRole(Role role){
+        this.roles.add(role);
+        role.getUsers().add(this);
     }
 }

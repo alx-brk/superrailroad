@@ -7,4 +7,5 @@ public interface RoleDao {
     Role read(Integer id);
     void update(Role role);
     void delete(Integer id);
+    Role find(String role);
 }

@@ -7,4 +7,5 @@ public interface UserDao {
     User read(Integer id);
     void update(User user);
     void delete(Integer id);
+    User find(String login);
 }

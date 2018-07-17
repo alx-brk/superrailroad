@@ -37,4 +37,11 @@ public class RoleDaoImpl implements RoleDao{
         entityManager.remove(entityManager.getReference(Role.class, id));
         entityManager.close();
     }
+
+    @Override
+    public Role find(String role) {
+        return entityManager.createQuery("select r from role r where r.role = :role", Role.class)
+                            .setParameter("role", role)
+                            .getSingleResult();
+    }
 }

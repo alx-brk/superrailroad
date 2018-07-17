@@ -37,4 +37,11 @@ public class UserDaoImpl implements UserDao{
         entityManager.remove(entityManager.getReference(User.class, id));
         entityManager.close();
     }
+
+    @Override
+    public User find(String login) {
+        return entityManager.createQuery("select u from user u where u.login = :login", User.class)
+                            .setParameter("login", login)
+                            .getSingleResult();
+    }
 }

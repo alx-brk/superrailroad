@@ -1,5 +1,7 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page isELIgnored="false" %>
 <html>
@@ -9,19 +11,33 @@
     <spring:url value="/resources/css/style.css" var="styleCSS"/>
     <link href="${bootstrapCSS}" rel="stylesheet"/>
     <link href="${styleCSS}" rel="stylesheet"/>
-    <title>Admin Page</title>
+    <title>Home Page</title>
 </head>
 <body>
 <nav class="navbar navbar-toggleable-md sticky-top navbar-my navbar-inverse">
-    <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-            <a class="btn btn-primary btn-my" href="/" role="button">Home</a>
-        </li>
-    </ul>
+
+    <sec:authorize access="hasRole('ROLE_ADMIN')">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="btn btn-primary btn-my" href="/admin/createStation" role="button">Admin</a>
+            </li>
+        </ul>
+    </sec:authorize>
+
     <ul class="navbar-nav ml-auto">
-        <li class="nav-item">
-            <a class="btn btn-primary btn-my" href="/logout" role="button">Log out</a>
-        </li>
+        <sec:authorize access="!isAuthenticated()">
+            <li class="nav-item">
+                <a class="nav-link" href="login">Sign In</a>
+            </li>
+            <li class="nav-item">
+                <a class="btn btn-primary btn-my" href="/registration" role="button">Sign Up</a>
+            </li>
+        </sec:authorize>
+        <sec:authorize access="isAuthenticated()">
+            <li class="nav-item">
+                <a class="btn btn-primary btn-my" href="/logout" role="button">Log out</a>
+            </li>
+        </sec:authorize>
     </ul>
 </nav>
 <div class="page-header header-my">
@@ -37,17 +53,11 @@
             <div class="col-md-12">
                 <ul class="nav nav-tabs">
                     <li class="nav-item">
-                        <a href="/admin/createStation" class="active nav-link">
-                            <i class="fa fa-home fa-home"></i>&nbsp;Add station</a>
+                        <a class="nav-link" href="/">Find Train</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/admin/createTrain">Add train</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/createRide">Schedule ride</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/admin/trainInfo">Train info</a>
+                        <a href="/stationSearch" class="active nav-link">
+                            <i class="fa fa-home fa-home"></i>&nbsp;Find Station</a>
                     </li>
                 </ul>
             </div>
@@ -55,11 +65,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card-body p-5 card-my">
-                    <h3 class="pb-3">Add new station</h3>
+                    <h3 class="pb-3">Choose station</h3>
                     <form>
                         <div class="form-group">
                             <div class="row">
-                                <div class="col-md-4 my-select">
+                                <div class="col-md-12 my-select">
                                     <label>Station</label>
                                     <input placeholder="Station" list="listStation" class="form-control" id="station">
                                     <datalist id="listStation">
@@ -68,30 +78,29 @@
                                         </c:forEach>
                                     </datalist>
                                 </div>
-                                <div class="col-md-4">
-                                    <label>Distance</label>
-                                    <input class="form-control" type="number" id="distance">
-                                </div>
-                                <div class="col-md-4 my-select">
-                                    <label>New station</label>
-                                    <input class="form-control" placeholder="New station" id="newStation">
-                                </div>
                             </div>
                             <div class="form-group">
                                 <div class="py-3">
-                                    <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="createStation()">Add station</button>
-                                    </div>
+                                    <button  class="btn btn-primary btn-my" onclick="performSearchByStation()" type="button">Search</button>
                                 </div>
-                            </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Station was created
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Station wasn't created due to error
                             </div>
                         </div>
                     </form>
+                </div>
+            </div>
+        </div>
+        <div class="row alert-my" id="resultContainer">
+            <div class="col-md-12">
+                <div class="card-body p-5 card-my">
+                    <table class="table">
+                        <thead>
+                        <th scope="col">Ride ID</th>
+                        <th scope="col">Departure</th>
+                        <th scope="col">Route</th>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

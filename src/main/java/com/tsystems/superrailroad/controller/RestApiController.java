@@ -1,8 +1,7 @@
 package main.java.com.tsystems.superrailroad.controller;
 
-import main.java.com.tsystems.superrailroad.model.dto.RouteDto;
-import main.java.com.tsystems.superrailroad.model.dto.StationDto;
-import main.java.com.tsystems.superrailroad.model.dto.StationGraphDto;
+import main.java.com.tsystems.superrailroad.model.dto.*;
+import main.java.com.tsystems.superrailroad.model.excep.PassengerExistException;
 import main.java.com.tsystems.superrailroad.model.service.RouteService;
 import main.java.com.tsystems.superrailroad.model.service.StationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,5 +33,27 @@ public class RestApiController {
     @RequestMapping(value = "/admin/createTrain", method = RequestMethod.POST, consumes = {"application/json"})
     public void createTrain(@RequestBody RouteDto routeDto){
         routeService.createRoute(routeDto);
+    }
+
+    @RequestMapping(value = "/admin/createRide", method = RequestMethod.POST, consumes = {"application/json"})
+    public void createRide(@RequestBody RideDto rideDto){
+        routeService.createRide(rideDto);
+    }
+
+    @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = {"application/json"})
+    public @ResponseBody List<SearchResultDto> performSearch(@RequestBody SearchDto searchDto){
+        return routeService.performSearch(searchDto);
+    }
+
+    @RequestMapping(value = "/stationInfo", method = RequestMethod.POST, consumes = {"application/json"})
+    public @ResponseBody List<StationInfoDto> performStationSearch(@RequestBody StationDto stationDto){
+        return routeService.getStationInfoDtos(stationDto);
+    }
+
+    @RequestMapping(value = "/buy", method = RequestMethod.POST, consumes = {"application/json"})
+    public void buyTicket(@RequestBody PassengerDto passengerDto) throws PassengerExistException{
+        if (!routeService.buyTicket(passengerDto)){
+            throw new PassengerExistException("Such passenger already bought ticket to this train");
+        }
     }
 }

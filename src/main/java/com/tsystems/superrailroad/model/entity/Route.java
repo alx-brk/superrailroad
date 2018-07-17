@@ -11,7 +11,7 @@ public class Route {
     @Column(name = "route_id")
     private int routeId;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "train_id")
     private Train train;
 
