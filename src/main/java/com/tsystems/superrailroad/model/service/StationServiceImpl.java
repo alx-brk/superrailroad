@@ -6,6 +6,7 @@ import main.java.com.tsystems.superrailroad.model.dto.StationDto;
 import main.java.com.tsystems.superrailroad.model.dto.StationGraphDto;
 import main.java.com.tsystems.superrailroad.model.entity.Station;
 import main.java.com.tsystems.superrailroad.model.entity.StationGraph;
+import main.java.com.tsystems.superrailroad.model.excep.CreateStationException;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,19 +53,23 @@ public class StationServiceImpl implements StationService {
     @Override
     @Transactional
     public void createEndStation(StationGraphDto stationGraphDto) {
-        Station station = stationDao.find(stationGraphDto.getStation());
+        if (stationGraphDto.getDistance() > 0) {
+            Station station = stationDao.find(stationGraphDto.getStation());
 
-        StationDto stationDto = new StationDto(stationGraphDto.getNewStation());
-        Station newStation = mapper.map(stationDto, Station.class);
-        stationDao.create(newStation);
-        newStation = stationDao.find(stationGraphDto.getNewStation());
+            StationDto stationDto = new StationDto(stationGraphDto.getNewStation());
+            Station newStation = mapper.map(stationDto, Station.class);
+            stationDao.create(newStation);
+            newStation = stationDao.find(stationGraphDto.getNewStation());
 
-        StationGraph stationGraphForward = new StationGraph(station, newStation, stationGraphDto.getDistance());
-        StationGraph stationGraphBackward = new StationGraph(newStation, station, stationGraphDto.getDistance());
+            StationGraph stationGraphForward = new StationGraph(station, newStation, stationGraphDto.getDistance());
+            StationGraph stationGraphBackward = new StationGraph(newStation, station, stationGraphDto.getDistance());
 
-        stationGraphDao.create(stationGraphForward);
-        stationGraphDao.create(stationGraphBackward);
-        log.info("New station was created " + newStation.getName());
+            stationGraphDao.create(stationGraphForward);
+            stationGraphDao.create(stationGraphBackward);
+            log.info("New station was created " + newStation.getName());
+        } else {
+            throw new CreateStationException("Distance must be > 0");
+        }
     }
 
     @Override

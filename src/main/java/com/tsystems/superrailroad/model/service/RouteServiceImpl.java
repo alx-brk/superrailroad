@@ -3,6 +3,9 @@ package main.java.com.tsystems.superrailroad.model.service;
 import main.java.com.tsystems.superrailroad.model.dao.*;
 import main.java.com.tsystems.superrailroad.model.dto.*;
 import main.java.com.tsystems.superrailroad.model.entity.*;
+import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
+import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
+import main.java.com.tsystems.superrailroad.model.excep.PassengerExistException;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,23 +46,30 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public void createRoute(RouteDto routeDto) {
-        Route route = new Route();
-        Train train = mapper.map(routeDto.getTrainDto(), Train.class);
-        train.setRoute(route);
-        route.setTrain(train);
-        routeDao.create(route);
+        if (routeDto.getTrainDto().getCapacity() > 0
+                && routeDto.getTrainDto().getPriceForKm() > 0
+                && routeDto.getTrainDto().getSpeed() > 0
+                && routeDto.getRouteHasStationDtoList().size() > 1) {
+            Route route = new Route();
+            Train train = mapper.map(routeDto.getTrainDto(), Train.class);
+            train.setRoute(route);
+            route.setTrain(train);
+            routeDao.create(route);
 
-        List<RouteHasStationDto> routeHasStationDtoList = routeDto.getRouteHasStationDtoList();
+            List<RouteHasStationDto> routeHasStationDtoList = routeDto.getRouteHasStationDtoList();
 
-        for (RouteHasStationDto routeHasStationDto : routeHasStationDtoList){
-            RouteHasStation routeHasStation = new RouteHasStation();
-            routeHasStation.setStationOrder(routeHasStationDto.getStationOrder());
-            Station station = stationDao.find(routeHasStationDto.getStationDto().getName());
-            routeHasStation.setStation(station);
-            routeHasStation.setRoute(route);
-            routeHasStationDao.create(routeHasStation);
+            for (RouteHasStationDto routeHasStationDto : routeHasStationDtoList) {
+                RouteHasStation routeHasStation = new RouteHasStation();
+                routeHasStation.setStationOrder(routeHasStationDto.getStationOrder());
+                Station station = stationDao.find(routeHasStationDto.getStationDto().getName());
+                routeHasStation.setStation(station);
+                routeHasStation.setRoute(route);
+                routeHasStationDao.create(routeHasStation);
+            }
+            log.info("Route " + routeDto.getRouteId() + " was created");
+        } else {
+            throw new CreateRouteException();
         }
-        log.info("Route " + routeDto.getRouteId() + " was created");
     }
 
     @Override
@@ -95,35 +105,39 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public void createRide(RideDto rideDto) {
-        Ride ride = new Ride();
-        Route route = routeDao.read(rideDto.getRoute());
-        Train train = route.getTrain();
-        ride.setRoute(route);
-        ride.setDeparture(rideDto.getDeparture());
-        rideDao.create(ride);
+        if (rideDto.getDeparture().after(new Date())) {
+            Ride ride = new Ride();
+            Route route = routeDao.read(rideDto.getRoute());
+            Train train = route.getTrain();
+            ride.setRoute(route);
+            ride.setDeparture(rideDto.getDeparture());
+            rideDao.create(ride);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(rideDto.getDeparture());
-        Station previousStation = null;
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(rideDto.getDeparture());
+            Station previousStation = null;
 
-        List<RouteHasStation> routeHasStationList = routeHasStationDao.getStationsByRoute(route);
-        for (RouteHasStation routeHasStation : routeHasStationList){
-            RideHasStation rideHasStation = new RideHasStation();
-            rideHasStation.setRide(ride);
-            if (routeHasStation.getStationOrder() == 1){
-                rideHasStation.setPrice(0);
-            } else {
-                Integer distance = stationGraphDao.find(previousStation, routeHasStation.getStation()).getDistance();
-                float price = (float)distance/1000 * train.getPriceForKm();
-                rideHasStation.setPrice(price);
-                calendar.add(Calendar.SECOND, distance/train.getSpeed());
+            List<RouteHasStation> routeHasStationList = routeHasStationDao.getStationsByRoute(route);
+            for (RouteHasStation routeHasStation : routeHasStationList) {
+                RideHasStation rideHasStation = new RideHasStation();
+                rideHasStation.setRide(ride);
+                if (routeHasStation.getStationOrder() == 1) {
+                    rideHasStation.setPrice(0);
+                } else {
+                    Integer distance = stationGraphDao.find(previousStation, routeHasStation.getStation()).getDistance();
+                    float price = (float) distance / 1000 * train.getPriceForKm();
+                    rideHasStation.setPrice(price);
+                    calendar.add(Calendar.SECOND, distance / train.getSpeed());
+                }
+                previousStation = routeHasStation.getStation();
+                rideHasStation.setDeparture(calendar.getTime());
+                rideHasStation.setStation(routeHasStation.getStation());
+                rideHasStationDao.create(rideHasStation);
             }
-            previousStation = routeHasStation.getStation();
-            rideHasStation.setDeparture(calendar.getTime());
-            rideHasStation.setStation(routeHasStation.getStation());
-            rideHasStationDao.create(rideHasStation);
+            log.info("Ride " + rideDto.getRideId() + " was created");
+        } else {
+            throw new CreateRideException();
         }
-        log.info("Ride " + rideDto.getRideId() + " was created");
     }
 
     @Override
@@ -174,26 +188,35 @@ public class RouteServiceImpl implements RouteService {
     @Override
     @Transactional
     public boolean buyTicket(PassengerDto passengerDto) {
-        Passenger passenger = new Passenger();
-        try {
-            passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate());
+        if (passengerDto.getFirstName() == null
+                || passengerDto.getLastName() == null
+                || passengerDto.getBirthDate() == null
+                || passengerDto.getFirstName().trim().isEmpty()
+                || passengerDto.getLastName().trim().isEmpty()
+                || passengerDto.getBirthDate().after(new Date())){
             return false;
-        } catch (NoResultException e){
+        } else {
+            Passenger passenger = new Passenger();
+            try {
+                passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate());
+                return false;
+            } catch (NoResultException e) {
 
+            }
+            passenger.setFirstName(passengerDto.getFirstName());
+            passenger.setLastName(passengerDto.getLastName());
+            passenger.setBirthDate(passengerDto.getBirthDate());
+
+            Ride ride = rideDao.read(passengerDto.getRideId());
+
+            Ticket ticket = new Ticket();
+            ticket.setPassenger(passenger);
+            ticket.setRide(ride);
+
+            ticketDao.create(ticket);
+            log.info(passengerDto.getFirstName() + " " + passengerDto.getLastName() + " bought ticket to ride " + ride.getRideId());
+            return true;
         }
-        passenger.setFirstName(passengerDto.getFirstName());
-        passenger.setLastName(passengerDto.getLastName());
-        passenger.setBirthDate(passengerDto.getBirthDate());
-
-        Ride ride = rideDao.read(passengerDto.getRideId());
-
-        Ticket ticket = new Ticket();
-        ticket.setPassenger(passenger);
-        ticket.setRide(ride);
-
-        ticketDao.create(ticket);
-        log.info(passengerDto.getFirstName() + " " + passengerDto.getLastName() + " bought ticket to ride " + ride.getRideId());
-        return true;
     }
 
     @Override

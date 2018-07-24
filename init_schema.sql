@@ -188,13 +188,13 @@ CREATE TABLE IF NOT EXISTS `railroad`.`route_has_Station` (
     insert into `railroad`.route(route_id, train_id) values (1, 1);
     insert into `railroad`.route(route_id, train_id) values (2, 2);
 
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (1, 1, 3);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (1, 2, 1);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (1, 3, 2);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (1, 4, 4);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (2, 1, 5);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (2, 2, 4);
-    insert into `railroad`.route_has_station(route_id, station_id, station_order) values (2, 3, 6);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (1, 1, 3);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (1, 2, 1);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (1, 3, 2);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (1, 4, 4);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (2, 1, 5);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (2, 2, 4);
+    insert into `railroad`.route_has_station(route_id, station_order, station_id) values (2, 3, 6);
 
     insert into `railroad`.ride(ride_id, route_id, departure) values (1, 1, STR_TO_DATE('2018-07-19 12:00:00', '%Y-%m-%d %H:%i:%S'));
     insert into `railroad`.ride(ride_id, route_id, departure) values (2, 1, STR_TO_DATE('2018-07-19 18:00:00', '%Y-%m-%d %H:%i:%S'));
