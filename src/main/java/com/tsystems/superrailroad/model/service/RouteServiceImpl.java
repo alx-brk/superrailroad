@@ -1,22 +1,27 @@
 package main.java.com.tsystems.superrailroad.model.service;
 
+import com.rabbitmq.client.BuiltinExchangeType;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import main.java.com.tsystems.superrailroad.model.dao.*;
 import main.java.com.tsystems.superrailroad.model.dto.*;
 import main.java.com.tsystems.superrailroad.model.entity.*;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
-import main.java.com.tsystems.superrailroad.model.excep.PassengerExistException;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.NoResultException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 public class RouteServiceImpl implements RouteService {
     private static final Logger log = Logger.getLogger(RouteServiceImpl.class);
@@ -141,6 +146,52 @@ public class RouteServiceImpl implements RouteService {
     }
 
     @Override
+    @Transactional
+    public void changeRide(RideDto rideDto) {
+        if (rideDto.getDeparture().after(new Date())){
+            Ride ride = rideDao.read(rideDto.getRideId());
+            Calendar oldDate = Calendar.getInstance();
+            oldDate.setTime(ride.getDeparture());
+            Calendar newDate = Calendar.getInstance();
+            newDate.setTime(rideDto.getDeparture());
+            long timeGap = newDate.getTimeInMillis() - oldDate.getTimeInMillis();
+            ride.setDeparture(rideDto.getDeparture());
+            rideDao.update(ride);
+
+            for (RideHasStation rideHasStation : rideHasStationDao.getStationsByRide(ride)){
+                Calendar departure = Calendar.getInstance();
+                departure.setTime(rideHasStation.getDeparture());
+                departure.add(Calendar.SECOND, (int) (timeGap/1000));
+                rideHasStation.setDeparture(departure.getTime());
+                rideHasStationDao.update(rideHasStation);
+            }
+
+            sendMessage(ride);
+        } else {
+            throw new CreateRideException();
+        }
+    }
+
+    private void sendMessage(Ride ride){
+        List<RideStationDto> rideStationDtoList = getRideStationDtoList(ride);
+        String queueName = "queue";
+        ConnectionFactory factory = new ConnectionFactory();
+        factory.setHost("localhost");
+
+        try(Connection connection = factory.newConnection();
+            Channel channel = connection.createChannel()){
+            channel.exchangeDeclare(queueName, BuiltinExchangeType.FANOUT);
+            String message = "Hello World!";
+            channel.basicPublish(queueName, "", null, message.getBytes());
+
+        } catch (TimeoutException e){
+            log.error(e);
+        } catch (IOException e){
+            log.error(e);
+        }
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public List<SearchResultDto> performSearch(SearchDto searchDto) {
         List<SearchResultDto> searchResultDtoList = new ArrayList<>();
@@ -258,21 +309,48 @@ public class RouteServiceImpl implements RouteService {
         List<RideHasStation> rideHasStationList = rideHasStationDao.getRidesByStation(currentStation);
 
         for (RideHasStation rideHasStation : rideHasStationList){
-            StationInfoDto stationInfoDto = new StationInfoDto();
-            Ride ride = rideHasStation.getRide();
-            stationInfoDto.setRideId(ride.getRideId());
-            stationInfoDto.setDatetime(format.format(rideHasStation.getDeparture()));
-            List<StationDateDto> stationDateDtoList = new ArrayList<>();
+            Calendar today = Calendar.getInstance();
+            Calendar rideDay = Calendar.getInstance();
+            rideDay.setTime(rideHasStation.getDeparture());
+            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR) || true) {
+                StationInfoDto stationInfoDto = new StationInfoDto();
+                Ride ride = rideHasStation.getRide();
+                stationInfoDto.setRideId(ride.getRideId());
+                stationInfoDto.setDatetime(format.format(rideHasStation.getDeparture()));
+                List<StationDateDto> stationDateDtoList = new ArrayList<>();
 
-            List<RideHasStation> rideHasStations = rideHasStationDao.getStationsByRide(ride);
-            for (RideHasStation rhs : rideHasStations){
-                stationDateDtoList.add(new StationDateDto(rhs.getStation().getName(), format.format(rhs.getDeparture())));
+                List<RideHasStation> rideHasStations = rideHasStationDao.getStationsByRide(ride);
+                for (RideHasStation rhs : rideHasStations) {
+                    stationDateDtoList.add(new StationDateDto(rhs.getStation().getName(), format.format(rhs.getDeparture())));
+                }
+
+                stationInfoDto.setStations(stationDateDtoList);
+                stationInfoDtoList.add(stationInfoDto);
             }
-
-            stationInfoDto.setStations(stationDateDtoList);
-            stationInfoDtoList.add(stationInfoDto);
         }
 
         return stationInfoDtoList;
+    }
+
+    private List<RideStationDto> getRideStationDtoList(Ride ride){
+        SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        List<RideStationDto> rideStationDtoList = new ArrayList<>();
+
+        List<RideHasStation> rideHasStationList = rideHasStationDao.getStationsByRide(ride);
+        for (RideHasStation rideHasStation : rideHasStationList){
+            RideStationDto rideStationDto = new RideStationDto();
+            rideStationDto.setRideId(ride.getRideId());
+            rideStationDto.setStation(rideHasStation.getStation().getName());
+            rideStationDto.setDateTime(format.format(rideHasStation.getDeparture()));
+            rideStationDtoList.add(rideStationDto);
+        }
+
+        return rideStationDtoList;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public RideDto getRideById(int rideId) {
+        return mapper.map(rideDao.read(rideId), RideDto.class);
     }
 }

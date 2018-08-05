@@ -256,3 +256,31 @@ function buyTicket() {
         });
     }
 }
+
+function changeRide() {
+    var rideId = $("#rideId").val().trim();
+    var departure = $("#departure").val().trim();
+    var route = $("#routeId").val().trim();
+
+    if (rideId != '' && departure != '' && route != ''){
+        var rideDto = {rideId : rideId, route: route, departure: departure};
+
+        $.ajax({
+            headers : {
+                'Accept' : 'application/json',
+                'Content-Type' : 'application/json'
+            },
+            url : "/admin/confirmChangeRide",
+            contentType : 'application/json',
+            data : JSON.stringify(rideDto),
+            type : 'POST',
+            success : function () {
+                $("#alert-success").fadeIn().delay(1000).fadeOut;
+            },
+            error : function (xhr, status, error) {
+                $("#alert-danger").append("\n" + error)
+                $("#alert-danger").fadeIn().delay(1000).fadeOut;
+            }
+        });
+    }
+}

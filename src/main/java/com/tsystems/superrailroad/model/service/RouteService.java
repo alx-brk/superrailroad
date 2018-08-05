@@ -12,4 +12,6 @@ public interface RouteService {
     boolean buyTicket(PassengerDto passengerDto);
     List<RideInfoDto> getRideInfo();
     List<StationInfoDto> getStationInfoDtos(StationDto stationDto);
+    RideDto getRideById(int rideId);
+    void changeRide(RideDto rideDto);
 }

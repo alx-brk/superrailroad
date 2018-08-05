@@ -40,6 +40,11 @@ public class RestApiController {
         routeService.createRide(rideDto);
     }
 
+    @RequestMapping(value = "/admin/confirmChangeRide", method = RequestMethod.POST, consumes = {"application/json"})
+    public void changeRide(@RequestBody RideDto rideDto){
+        routeService.changeRide(rideDto);
+    }
+
     @RequestMapping(value = "/search", method = RequestMethod.POST, consumes = {"application/json"})
     public @ResponseBody List<SearchResultDto> performSearch(@RequestBody SearchDto searchDto){
         return routeService.performSearch(searchDto);

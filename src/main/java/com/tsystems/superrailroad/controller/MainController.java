@@ -56,6 +56,15 @@ public class MainController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "admin/changeRide/{rideId}", method = RequestMethod.GET)
+    public ModelAndView changeRide(@PathVariable("rideId") int rideId){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("adminChangeRide");
+        modelAndView.addObject("rideIdJSP", routeService.getRideById(rideId));
+
+        return modelAndView;
+    }
+
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(WebRequest request, Model model){
         model.addAttribute("userJSP", new UserDto());

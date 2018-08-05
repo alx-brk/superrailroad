@@ -66,6 +66,7 @@
                                 <th scope="col">Arrival station</th>
                                 <th scope="col">Arrival Date and Time</th>
                                 <th scope="col">Passengers</th>
+                                <th scope="col"></th>
                                 </thead>
                                 <tbody>
                                 <c:forEach items="${rideInfoJSP}" var="ride">
@@ -82,6 +83,7 @@
                                                 </c:forEach>
                                             </ol>
                                         </td>
+                                        <td><a class="btn btn-primary btn-my" href="changeRide/${ride.rideId}" role="button">Change</a></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>

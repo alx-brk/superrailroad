@@ -5,6 +5,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:security="http://www.springframework.org/schema/security"
+       xmlns:rabbit="http://www.springframework.org/schema/rabbit"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
                            http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://www.springframework.org/schema/tx
@@ -16,7 +17,9 @@
                            http://www.springframework.org/schema/mvc
                            http://www.springframework.org/schema/mvc/spring-mvc.xsd
                            http://www.springframework.org/schema/security
-                           http://www.springframework.org/schema/security/spring-security.xsd">
+                           http://www.springframework.org/schema/security/spring-security.xsd
+                           http://www.springframework.org/schema/rabbit
+                           http://www.springframework.org/schema/rabbit/spring-rabbit.xsd">
 
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
@@ -31,7 +34,7 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-        <property name="url" value="jdbc:mysql://localhost:3306/railroad?useSSL=false"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/railroad?allowPublicKeyRetrieval=true&amp;useSSL=false"/>
         <property name="username" value="admin"/>
         <property name="password" value="admin"/>
     </bean>
@@ -53,6 +56,11 @@
         </property>
     </bean>
 
+    <rabbit:connection-factory id="connectionFactory"/>
+    <rabbit:template id="amqpTemplate" connection-factory="connectionFactory"/>
+    <rabbit:admin connection-factory="connectionFactory"/>
+    <rabbit:queue name="queue"/>
+
     <security:http auto-config="true" use-expressions="true" create-session="ifRequired">
         <security:intercept-url pattern="/admin/**" access="hasRole('ROLE_ADMIN')"/>
         <security:intercept-url pattern="/*" access="permitAll()"/>
@@ -71,21 +79,6 @@
     <security:authentication-manager>
         <security:authentication-provider user-service-ref="userService">
             <security:password-encoder ref="encoder"/>
-
-            <!--
-            <security:user-service>
-                <security:user name="admin" authorities="ROLE_ADMIN" password="{noop}admin"/>
-                <security:user name="user" authorities="ROLE_USER" password="{noop}user"/>
-            </security:user-service>
-
-            <security:jdbc-user-service data-source-ref="dataSource"
-                                        users-by-username-query="select login, password, true from user_ where login =?"
-                                        authorities-by-username-query="select u.login, r.role from role r inner join user__has_role ur on r.role_id = ur.role_role_id inner join user_ u on ur.User__user_id = u.user_id where u.login =?"/>
-
-            <security:password-encoder ref="encoder"/>
-            -->
-
-
         </security:authentication-provider>
     </security:authentication-manager>
 
