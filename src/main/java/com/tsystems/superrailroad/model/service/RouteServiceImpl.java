@@ -10,6 +10,8 @@ import main.java.com.tsystems.superrailroad.model.entity.*;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.NoResultException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 public class RouteServiceImpl implements RouteService {
@@ -174,6 +173,16 @@ public class RouteServiceImpl implements RouteService {
 
     private void sendMessage(Ride ride){
         List<RideStationDto> rideStationDtoList = getRideStationDtoList(ride);
+        JSONObject messageJSON = new JSONObject();
+        messageJSON.put("rideId", ride.getRideId());
+        JSONObject stations = new JSONObject();
+
+        for (RideStationDto rideStationDto : rideStationDtoList){
+            stations.put(rideStationDto.getStation(), rideStationDto.getDateTime());
+        }
+
+        messageJSON.put("stations", stations);
+
         String queueName = "queue";
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -181,7 +190,7 @@ public class RouteServiceImpl implements RouteService {
         try(Connection connection = factory.newConnection();
             Channel channel = connection.createChannel()){
             channel.exchangeDeclare(queueName, BuiltinExchangeType.FANOUT);
-            String message = "Hello World!";
+            String message = messageJSON.toString();
             channel.basicPublish(queueName, "", null, message.getBytes());
 
         } catch (TimeoutException e){
@@ -303,6 +312,7 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public List<StationInfoDto> getStationInfoDtos(StationDto stationDto) {
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        format.setTimeZone(TimeZone.getTimeZone("UTC+03:00"));
         List<StationInfoDto> stationInfoDtoList = new ArrayList<>();
 
         Station currentStation = stationDao.find(stationDto.getName());
@@ -334,6 +344,7 @@ public class RouteServiceImpl implements RouteService {
 
     private List<RideStationDto> getRideStationDtoList(Ride ride){
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy HH:mm");
+        format.setTimeZone(TimeZone.getTimeZone("UTC+03:00"));
         List<RideStationDto> rideStationDtoList = new ArrayList<>();
 
         List<RideHasStation> rideHasStationList = rideHasStationDao.getStationsByRide(ride);
