@@ -10,7 +10,6 @@ import main.java.com.tsystems.superrailroad.model.entity.*;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
 import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
 import org.apache.log4j.Logger;
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -322,7 +321,7 @@ public class RouteServiceImpl implements RouteService {
             Calendar today = Calendar.getInstance();
             Calendar rideDay = Calendar.getInstance();
             rideDay.setTime(rideHasStation.getDeparture());
-            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR) || true) {
+            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR)) {
                 StationInfoDto stationInfoDto = new StationInfoDto();
                 Ride ride = rideHasStation.getRide();
                 stationInfoDto.setRideId(ride.getRideId());
