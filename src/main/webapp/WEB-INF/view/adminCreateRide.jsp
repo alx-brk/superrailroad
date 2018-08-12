@@ -52,7 +52,7 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="root">
             <div class="col-md-12">
                 <div class="card-body p-5 card-my">
                     <h3 class="pb-3">Add new train</h3>
@@ -61,32 +61,27 @@
                             <div class="row">
                                 <div class="col-md-5 my-select">
                                     <label>Route</label>
-                                    <input placeholder="Route" list="listRoute" class="form-control" id="route">
+                                    <input placeholder="Route" list="listRoute" class="form-control" v-model="routeId">
                                     <datalist id="listRoute">
-                                        <c:forEach items="${routeJSPList}" var="route">
-                                            <option value="${route.routeId}"/>
-                                        </c:forEach>
+                                        <option v-for="option in datalist" :value="option"/>
                                     </datalist>
                                 </div>
                                 <div class="col-md-2">
                                 </div>
                                 <div class="col-md-5 my-select">
                                     <label>Departure Date and Time</label>
-                                    <input type='datetime-local' class="form-control" id="departure" />
+                                    <input type='datetime-local' class="form-control" v-model="departure" />
                                 </div>
                             </div>
                             <div class="form-group" id="buttons">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="createRide()">Schedule</button>
+                                        <button class="btn btn-primary btn-my" type="button" @click="createRide">Schedule</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Ride was created
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Ride wasn't created due to error
+                            <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
+                                <span v-text="alert"/>
                             </div>
                             <div class="row">
                                 <div class="col-md-12">
@@ -99,21 +94,17 @@
                                         <th scope="col">Station</th>
                                         </thead>
                                         <tbody>
-                                        <c:forEach items="${routeJSPList}" var="route">
-                                            <tr>
-                                                <th scope="row">${route.routeId}</th>
-                                                <td>${route.trainDto.capacity}</td>
-                                                <td>${route.trainDto.priceForKm}</td>
-                                                <td>${route.trainDto.speed}</td>
+                                            <tr v-for="route in routes" @click="chooseRoute(route)" :class="{'tr-chosen': route.chosen}">
+                                                <th scope="row" v-text="route.routeId"/>
+                                                <td v-text="route.trainDto.capacity"/>
+                                                <td v-text="route.trainDto.priceForKm"/>
+                                                <td v-text="route.trainDto.speed"/>
                                                 <td>
-                                                    <ol>
-                                                        <c:forEach items="${route.routeHasStationDtoList}" var="station">
-                                                            <li>${station.stationDto.name}</li>
-                                                        </c:forEach>
-                                                    </ol>
+                                                    <ul v-for="station in route.routeHasStationDtoList">
+                                                        <li v-text="station.stationDto.name"/>
+                                                    </ul>
                                                 </td>
                                             </tr>
-                                        </c:forEach>
                                         </tbody>
                                     </table>
                                 </div>
@@ -128,11 +119,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
-<spring:url value="/resources/js/create_ride_extra.js" var="railroadExtraJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/createRide.js" var="createRide"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
-<script src="${railroadExtraJS}"></script>
+<script src="${vue}"></script>
+<script src="${createRide}"></script>
 </body>
 </html>

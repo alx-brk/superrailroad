@@ -52,7 +52,7 @@
     <hr class="hr-primary"> </div>
 <div class="p-3 gradient-overlay bg-secondary"> </div>
 
-<div class="py-5">
+<div class="py-5" id="root">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -63,34 +63,31 @@
                             <div class="row">
                                 <div class="col-md-12 my-select">
                                     <label>First name</label>
-                                    <input class="form-control" placeholder="First name" name="firstName" id="firstName" type="text">
+                                    <input class="form-control" placeholder="First name" @keydown="clearAlert" name="firstName" v-model="firstName" type="text" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 my-select">
                                     <label>Last name</label>
-                                    <input class="form-control" placeholder="Last name" name="lastName" id="lastName" type="text">
+                                    <input class="form-control" placeholder="Last name" @keydown="clearAlert" name="lastName" v-model="lastName" type="text" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 my-select">
                                     <label>Birth Date</label>
-                                    <input type='date' class="form-control" id="birthDate"/>
+                                    <input type='date' class="form-control" @keydown="clearAlert" v-model="birthDate" required/>
                                 </div>
                             </div>
                             <div class="form-group" id="buttons">
                                 <div class="py-3">
                                     <div class="py-4">
                                         <input id="rideId" value="${rideIdJSP}" hidden>
-                                        <button  class="btn btn-primary btn-my" onclick="buyTicket()" type="button">Confirm</button>
+                                        <button  class="btn btn-primary btn-my" @click="buyTicket" type="button">Confirm</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                You bought the ticket
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                You can't buy ticket due to error
+                            <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
+                                <span v-text="alert"/>
                             </div>
                         </div>
                     </form>
@@ -102,9 +99,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/passenger.js" var="passenger"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
+<script src="${vue}"></script>
+<script src="${passenger}"></script>
 </body>
 </html>

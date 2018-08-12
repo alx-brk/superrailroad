@@ -30,6 +30,16 @@ public class RestApiController {
         return stationService.getConnectedStations(stationDto);
     }
 
+    @RequestMapping(value = "/admin/getAllStations", method = RequestMethod.GET)
+    public @ResponseBody List<StationDto> getAllStations(){
+        return stationService.getAllStations();
+    }
+
+    @RequestMapping(value = "/admin/getAllRoutes", method = RequestMethod.GET)
+    public @ResponseBody List<RouteDto> getAllRoutes(){
+        return routeService.getAllRoutes();
+    }
+
     @RequestMapping(value = "/admin/createTrain", method = RequestMethod.POST, consumes = {"application/json"})
     public void createTrain(@RequestBody RouteDto routeDto){
         routeService.createRoute(routeDto);

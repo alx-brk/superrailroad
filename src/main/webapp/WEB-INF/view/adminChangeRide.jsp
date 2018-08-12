@@ -31,7 +31,7 @@
     <hr class="hr-primary"> </div>
 <div class="p-3 gradient-overlay bg-secondary"> </div>
 
-<div class="py-5">
+<div class="py-5" id="root">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -50,21 +50,18 @@
                                 </div>
                                 <div class="col-md-6 my-select">
                                     <label>Departure Date and Time</label>
-                                    <input type='datetime-local' class="form-control" id="departure" value="${rideIdJSP.departure}"/>
+                                    <input type='datetime-local' class="form-control" v-model="departure"/>
                                 </div>
                             </div>
-                            <div class="form-group" id="buttons">
+                            <div class="form-group">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="changeRide()">Change Date</button>
+                                        <button class="btn btn-primary btn-my" type="button" @click="changeRide">Change Date</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Ride was changed
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Ride wasn't changed due to error
+                            <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
+                                <span v-text="alert"/>
                             </div>
                         </div>
                     </form>
@@ -76,9 +73,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/changeRide.js" var="changeRide"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
+<script src="${vue}"></script>
+<script src="${changeRide}"></script>
 </body>
 </html>

@@ -73,9 +73,7 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
 </body>
 </html>

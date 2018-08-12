@@ -47,7 +47,7 @@
     <hr class="hr-primary"> </div>
 <div class="p-3 gradient-overlay bg-secondary"> </div>
 
-<div class="py-5">
+<div class="py-5" id="root">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -71,7 +71,7 @@
                             <div class="row">
                                 <div class="col-md-12 my-select">
                                     <label>Station</label>
-                                    <input placeholder="Station" list="listStation" class="form-control" id="station">
+                                    <input placeholder="Station" list="listStation" @keydown="clearError" class="form-control" v-model="station" required>
                                     <datalist id="listStation">
                                         <c:forEach items="${stationJSPList}" var="station">
                                             <option value="${station.name}"/>
@@ -81,15 +81,18 @@
                             </div>
                             <div class="form-group">
                                 <div class="py-3">
-                                    <button  class="btn btn-primary btn-my" onclick="performSearchByStation()" type="button">Search</button>
+                                    <button  class="btn btn-primary btn-my" @click="search" type="button">Search</button>
                                 </div>
+                            </div>
+                            <div class="alert alert-danger" role="alert" v-show="errorShow">
+                                <span v-text="error"/>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-        <div class="row alert-my" id="resultContainer">
+        <div class="row" v-show="visible">
             <div class="col-md-12">
                 <div class="card-body p-5 card-my">
                     <table class="table">
@@ -99,6 +102,24 @@
                         <th scope="col">Route</th>
                         </thead>
                         <tbody>
+                            <tr v-for="entry in entries">
+                                <th scope="row" v-text="entry.rideId"/>
+                                <td v-text="entry.datetime"/>
+                                <td>
+                                    <table class="table">
+                                        <thead>
+                                            <th scope="col">Station</th>
+                                            <th scope="col">Time</th>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="station in entry.stations">
+                                                <td v-text="station.station"/>
+                                                <td v-text="station.dateTime"/>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -109,9 +130,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/stationSearch.js" var="stationSearch"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
+<script src="${vue}"></script>
+<script src="${stationSearch}"></script>
 </body>
 </html>

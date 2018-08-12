@@ -31,7 +31,7 @@
     <hr class="hr-primary"> </div>
 <div class="p-3 gradient-overlay bg-secondary"> </div>
 
-<div class="py-5">
+<div class="py-5" id="root">
     <div class="container">
         <div class="row">
             <div class="col-md-12">
@@ -61,7 +61,7 @@
                             <div class="row">
                                 <div class="col-md-4 my-select">
                                     <label>Station</label>
-                                    <input placeholder="Station" list="listStation" class="form-control" id="station">
+                                    <input placeholder="Station" list="listStation" @keydown="clearAlert" class="form-control" v-model="station" required>
                                     <datalist id="listStation">
                                         <c:forEach items="${stationJSPList}" var="station">
                                             <option value="${station.name}"/>
@@ -70,25 +70,22 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label>Distance</label>
-                                    <input class="form-control" type="number" id="distance">
+                                    <input class="form-control" type="number" @keydown="clearAlert" v-model="distance" required>
                                 </div>
                                 <div class="col-md-4 my-select">
                                     <label>New station</label>
-                                    <input class="form-control" placeholder="New station" id="newStation">
+                                    <input class="form-control" placeholder="New station" @keydown="clearAlert" v-model="newStation" required>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="createStation()">Add station</button>
+                                        <button class="btn btn-primary btn-my" type="button" @click="createStation">Add station</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Station was created
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Station wasn't created due to error
+                            <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
+                                <span v-text="alert"/>
                             </div>
                         </div>
                     </form>
@@ -100,9 +97,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/createStation.js" var="createStation"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
+<script src="${vue}"></script>
+<script src="${createStation}"></script>
 </body>
 </html>

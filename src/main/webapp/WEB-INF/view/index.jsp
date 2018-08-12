@@ -47,7 +47,7 @@
         <hr class="hr-primary"> </div>
     <div class="p-3 gradient-overlay bg-secondary"> </div>
 
-    <div class="py-5">
+    <div class="py-5" id="root">
         <div class="container">
             <div class="row">
                 <div class="col-md-12">
@@ -71,7 +71,7 @@
                                 <div class="row">
                                     <div class="col-md-5 my-select">
                                         <label>From</label>
-                                        <input placeholder="From" list="listFrom" class="form-control" id="stationFrom">
+                                        <input placeholder="From" list="listFrom" class="form-control" @keydown="clearError" v-model="stationFrom" required>
                                         <datalist id="listFrom">
                                             <c:forEach items="${stationJSPList}" var="station">
                                                 <option value="${station.name}"/>
@@ -81,7 +81,7 @@
                                     <div class="col-md-2"> </div>
                                     <div class="col-md-5 my-select">
                                         <label>To</label>
-                                        <input placeholder="To" list="listTo" class="form-control" id="stationTo">
+                                        <input placeholder="To" list="listTo" class="form-control" @keydown="clearError"  v-model="stationTo" required>
                                         <datalist id="listTo">
                                             <c:forEach items="${stationJSPList}" var="station">
                                                 <option value="${station.name}"/>
@@ -92,18 +92,21 @@
                                 <div class="form-group">
                                     <div class="py-3">
                                         <label>Date</label>
-                                        <input type='date' class="form-control" id="date"/>
+                                        <input type='date' class="form-control" @keydown="clearError"  v-model="date" required/>
                                         <div class="py-4">
-                                            <button  class="btn btn-primary btn-my" onclick="performSearch()" type="button">Search</button>
+                                            <button  class="btn btn-primary btn-my" @click="search" type="button">Search</button>
                                         </div>
                                     </div>
+                                </div>
+                                <div class="alert alert-danger" role="alert" v-show="errorShow">
+                                    <span v-text="error"/>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
-            <div class="row alert-my" id="resultContainer">
+            <div class="row" v-show="visible">
                 <div class="col-md-12">
                     <div class="card-body p-5 card-my">
                         <table class="table table-hover">
@@ -117,6 +120,15 @@
                                 <th scope="col"></th>
                             </thead>
                             <tbody>
+                                <tr v-for="entry in entries">
+                                    <th scope="row" v-text="entry.trainId"/>
+                                    <td v-text="entry.departure"/>
+                                    <td v-text="entry.arrival"/>
+                                    <td v-text="entry.capacity"/>
+                                    <td v-text="entry.ticketsLeft"/>
+                                    <td v-text="entry.price"/>
+                                    <td><a class="btn btn-primary btn-my" :href="'/search/' + entry.rideId" role="button">Buy</a></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -127,9 +139,11 @@
 
     <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
     <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-    <spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+    <spring:url value="/resources/js/vue.js" var="vue"/>
+    <spring:url value="/resources/js/index.js" var="index"/>
     <script src="${jQuery}"></script>
     <script src="${bootstrapJS}"></script>
-    <script src="${railroadJS}"></script>
+    <script src="${vue}"></script>
+    <script src="${index}"></script>
 </body>
 </html>

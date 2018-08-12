@@ -119,7 +119,6 @@ public class MainController {
     public ModelAndView adminCreateTrain(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("adminCreateTrain");
-        modelAndView.addObject(stationJSPList, stationService.getAllStations());
 
         return modelAndView;
     }
@@ -128,7 +127,6 @@ public class MainController {
     public ModelAndView adminCreateRide(){
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("adminCreateRide");
-        modelAndView.addObject("routeJSPList", routeService.getAllRoutes());
 
         return modelAndView;
     }

@@ -52,7 +52,7 @@
                 </ul>
             </div>
         </div>
-        <div class="row">
+        <div class="row" id="root">
             <div class="col-md-12">
                 <div class="card-body p-5 card-my">
                     <h3 class="pb-3">Add new train</h3>
@@ -61,41 +61,43 @@
                             <div class="row">
                                 <div class="col-md-4 my-select">
                                     <label>Capacity</label>
-                                    <input placeholder="Number of passangers" type="number" step="1" class="form-control" id="capacity">
+                                    <input placeholder="Number of passangers" type="number" step="1" @keydown="clearAlert" class="form-control" v-model="capacity" required>
                                 </div>
                                 <div class="col-md-4">
                                     <label>Price for km</label>
-                                    <input placeholder="Price for km" type="number" step="0.01" class="form-control" id="price">
+                                    <input placeholder="Price for km" type="number" step="0.01" @keydown="clearAlert" class="form-control" v-model="price" required>
                                 </div>
                                 <div class="col-md-4 my-select">
                                     <label>Speed m/s</label>
-                                    <input placeholder="Speed m/s" type="number" step="1" class="form-control" id="speed">
+                                    <input placeholder="Speed m/s" type="number" step="1" @keydown="clearAlert" class="form-control" v-model="speed" required>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-12 my-select py-3">
                                     <label>Start station</label>
-                                    <input placeholder="Station" list="listStation1" class="form-control" id="station1">
-                                    <datalist id="listStation1">
-                                        <c:forEach items="${stationJSPList}" var="station">
-                                            <option value="${station.name}"/>
-                                        </c:forEach>
+                                    <input placeholder="Station" list="listStation" @keydown="clearAlert" class="form-control" v-model="station" required>
+                                    <datalist id="listStation">
+                                        <option v-for="option in datalist" :value="option"/>
                                     </datalist>
                                 </div>
                             </div>
-                            <div class="form-group" id="buttons">
+                            <div class="row">
+                                <div class="col-md-12 py-3">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item" v-for="station in stations" v-text="station"/>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="form-group">
                                 <div class="py-3">
                                     <div class="py-4">
-                                        <button class="btn btn-primary btn-my" type="button" onclick="addStationList()">Add station</button>
-                                        <button class="btn btn-primary btn-my" type="button" onclick="createTrain()">Create train</button>
+                                        <button class="btn btn-primary btn-my" type="button" @click="addStation">Add station</button>
+                                        <button class="btn btn-primary btn-my" type="button" @click="createTrain">Create train</button>
                                     </div>
                                 </div>
                             </div>
-                            <div class="alert alert-success alert-my" role="alert" id="alert-success">
-                                Train was created
-                            </div>
-                            <div class="alert alert-danger alert-my" role="alert" id="alert-danger">
-                                Train wasn't created due to error
+                            <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
+                                <span v-text="alert"/>
                             </div>
                         </div>
                     </form>
@@ -107,9 +109,11 @@
 
 <spring:url value="/resources/js/jquery-3.3.1.min.js" var="jQuery"/>
 <spring:url value="/resources/js/bootstrap.min.js" var="bootstrapJS"/>
-<spring:url value="/resources/js/railroad.js" var="railroadJS"/>
+<spring:url value="/resources/js/vue.js" var="vue"/>
+<spring:url value="/resources/js/createTrain.js" var="createTrain"/>
 <script src="${jQuery}"></script>
 <script src="${bootstrapJS}"></script>
-<script src="${railroadJS}"></script>
+<script src="${vue}"></script>
+<script src="${createTrain}"></script>
 </body>
 </html>
