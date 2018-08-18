@@ -14,4 +14,7 @@ public interface RouteService {
     List<StationInfoDto> getStationInfoDtos(StationDto stationDto);
     RideDto getRideById(int rideId);
     void changeRide(RideDto rideDto);
+    boolean deleteRide(Integer rideId);
+    void deleteStation(StationDto stationDto);
+    void deleteRoute(RouteDto routeDto);
 }

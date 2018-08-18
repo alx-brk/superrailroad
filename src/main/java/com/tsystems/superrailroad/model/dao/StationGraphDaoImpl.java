@@ -56,4 +56,11 @@ public class StationGraphDaoImpl implements StationGraphDao {
                 .setParameter("stationRef", stationRef)
                 .getSingleResult();
     }
+
+    @Override
+    public List<StationGraph> findAllByStation(Station station) {
+        return entityManager.createQuery("select sg from StationGraph sg where sg.station = :station or sg.stationRef = :station", StationGraph.class)
+                .setParameter("station", station)
+                .getResultList();
+    }
 }

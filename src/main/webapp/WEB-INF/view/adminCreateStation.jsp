@@ -63,9 +63,7 @@
                                     <label>Station</label>
                                     <input placeholder="Station" list="listStation" @keydown="clearAlert" class="form-control" v-model="station" required>
                                     <datalist id="listStation">
-                                        <c:forEach items="${stationJSPList}" var="station">
-                                            <option value="${station.name}"/>
-                                        </c:forEach>
+                                        <option v-for="option in datalist" :value="option"/>
                                     </datalist>
                                 </div>
                                 <div class="col-md-4">
@@ -86,6 +84,24 @@
                             </div>
                             <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
                                 <span v-text="alert"/>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th scope="col">Station ID</th>
+                                        <th scope="col">Station Name</th>
+                                        <th scope="col"></th>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="station in stations">
+                                            <th scope="row" v-text="station.stationId"/>
+                                            <td v-text="station.name"/>
+                                            <td><button class="btn btn-primary btn-my" type="button" @click="deleteStation(station)">Delete</button></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </form>

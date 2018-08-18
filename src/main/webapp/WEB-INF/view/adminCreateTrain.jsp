@@ -99,6 +99,34 @@
                             <div :class="[alertClass, success ? alertSuccess : alertDanger ]" role="alert" v-show="alertShow">
                                 <span v-text="alert"/>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <table class="table table-hover">
+                                        <thead>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Capacity</th>
+                                        <th scope="col">Price for km</th>
+                                        <th scope="col">Speed m/s</th>
+                                        <th scope="col">Station</th>
+                                        <th></th>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="route in routes">
+                                            <th scope="row" v-text="route.routeId"/>
+                                            <td v-text="route.trainDto.capacity"/>
+                                            <td v-text="route.trainDto.priceForKm"/>
+                                            <td v-text="route.trainDto.speed"/>
+                                            <td>
+                                                <ul v-for="station in route.routeHasStationDtoList">
+                                                    <li v-text="station.stationDto.name"/>
+                                                </ul>
+                                            </td>
+                                            <td><button class="btn btn-primary btn-my" type="button" @click="deleteRoute(route)">Delete</button></td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

@@ -12,7 +12,7 @@ public class Ride {
     @Column(name = "ride_id")
     private int rideId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "route_id")
     private Route route;
 

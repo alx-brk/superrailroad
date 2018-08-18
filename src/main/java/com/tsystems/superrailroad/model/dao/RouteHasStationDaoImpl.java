@@ -2,6 +2,7 @@ package main.java.com.tsystems.superrailroad.model.dao;
 
 import main.java.com.tsystems.superrailroad.model.entity.Route;
 import main.java.com.tsystems.superrailroad.model.entity.RouteHasStation;
+import main.java.com.tsystems.superrailroad.model.entity.Station;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -45,5 +46,10 @@ public class RouteHasStationDaoImpl implements RouteHasStationDao {
         return entityManager.createQuery("select r from RouteHasStation r where r.route = :route order by r.stationOrder asc", RouteHasStation.class)
                             .setParameter("route", route)
                             .getResultList();
+    }
+
+    @Override
+    public boolean stationUsed(Station station) {
+        return (entityManager.createQuery("select count(r) from RouteHasStation r where r.station = :station", Long.class).setParameter("station", station).getSingleResult() > 0);
     }
 }

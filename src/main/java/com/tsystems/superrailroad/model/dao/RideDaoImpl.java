@@ -1,6 +1,7 @@
 package main.java.com.tsystems.superrailroad.model.dao;
 
 import main.java.com.tsystems.superrailroad.model.entity.Ride;
+import main.java.com.tsystems.superrailroad.model.entity.Route;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -42,5 +43,10 @@ public class RideDaoImpl implements RideDao{
     @Override
     public List<Ride> getAll() {
         return entityManager.createQuery("select r from ride r", Ride.class).getResultList();
+    }
+
+    @Override
+    public boolean routeUsed(Route route) {
+        return (entityManager.createQuery("select count(r) from ride r where r.route = :route", Long.class).setParameter("route", route).getSingleResult() > 0);
     }
 }

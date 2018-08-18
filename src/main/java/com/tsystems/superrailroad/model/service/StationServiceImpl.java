@@ -6,7 +6,7 @@ import main.java.com.tsystems.superrailroad.model.dto.StationDto;
 import main.java.com.tsystems.superrailroad.model.dto.StationGraphDto;
 import main.java.com.tsystems.superrailroad.model.entity.Station;
 import main.java.com.tsystems.superrailroad.model.entity.StationGraph;
-import main.java.com.tsystems.superrailroad.model.excep.CreateStationException;
+import main.java.com.tsystems.superrailroad.model.excep.StationException;
 import org.apache.log4j.Logger;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class StationServiceImpl implements StationService {
             stationGraphDao.create(stationGraphBackward);
             log.info("New station was created " + newStation.getName());
         } else {
-            throw new CreateStationException("Distance must be > 0");
+            throw new StationException("Distance must be > 0");
         }
     }
 

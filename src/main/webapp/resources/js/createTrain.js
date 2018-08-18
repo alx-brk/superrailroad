@@ -13,7 +13,8 @@ var app = new Vue({
         speed: "",
         station: "",
         datalist: [],
-        stations: []
+        stations: [],
+        routes: []
     },
 
     computed: {
@@ -28,9 +29,36 @@ var app = new Vue({
                app.$data.datalist.push(data[key].name);
            });
         });
+
+        $.get("/admin/getAllRoutes", function (data) {
+            app.$data.routes = data;
+        });
     },
 
     methods: {
+        deleteRoute(route){
+            $.ajax({
+                headers : {
+                    'Accept' : 'application/json',
+                    'Content-Type' : 'application/json'
+                },
+                url : "/admin/deleteRoute",
+                contentType : 'application/json',
+                data : JSON.stringify(route),
+                type : 'POST',
+                success : function () {
+                    app.$data.success = true;
+                    app.$data.alert = "Route was deleted";
+                    var index = app.$data.routes.indexOf(route);
+                    app.$data.routes.splice(index, 1);
+                },
+                error : function (xhr, status, error) {
+                    app.$data.success = false;
+                    app.$data.alert = "Route wasn't deleted because it already used in ride";
+                }
+            });
+        },
+
         addStation(){
             if (this.station === ""){
                 app.$data.success = false;
@@ -97,6 +125,10 @@ var app = new Vue({
                             Object.keys(data).forEach(function (key) {
                                 app.$data.datalist.push(data[key].name);
                             });
+                        });
+
+                        $.get("/admin/getAllRoutes", function (data) {
+                            app.$data.routes = data;
                         });
                     },
                     error : function (xhr, status, error) {

@@ -65,6 +65,19 @@ public class MainController {
         return modelAndView;
     }
 
+    @RequestMapping(value = "admin/deleteRide/{rideId}", method = RequestMethod.GET)
+    public ModelAndView deleteRide(@PathVariable("rideId") int rideId){
+        ModelAndView modelAndView = new ModelAndView();
+        if (routeService.deleteRide(rideId)){
+            modelAndView.setViewName("redirect:/admin/trainInfo");
+        } else {
+            modelAndView.setViewName("error");
+            modelAndView.addObject("error", "You can't delete this Ride because it already has passengers");
+        }
+
+        return modelAndView;
+    }
+
     @RequestMapping(value = "/registration", method = RequestMethod.GET)
     public String registration(WebRequest request, Model model){
         model.addAttribute("userJSP", new UserDto());

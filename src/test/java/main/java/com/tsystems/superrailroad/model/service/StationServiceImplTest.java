@@ -5,7 +5,7 @@ import main.java.com.tsystems.superrailroad.model.dao.StationGraphDaoImpl;
 import main.java.com.tsystems.superrailroad.model.dto.StationDto;
 import main.java.com.tsystems.superrailroad.model.dto.StationGraphDto;
 import main.java.com.tsystems.superrailroad.model.entity.Station;
-import main.java.com.tsystems.superrailroad.model.excep.CreateStationException;
+import main.java.com.tsystems.superrailroad.model.excep.StationException;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class StationServiceImplTest {
         assertEquals("ololo", stationDto.getName());
     }
 
-    @Test(expected = CreateStationException.class)
+    @Test(expected = StationException.class)
     public void createEndStation() {
         StationGraphDto stationGraphDto = new StationGraphDto();
         stationGraphDto.setDistance(0);

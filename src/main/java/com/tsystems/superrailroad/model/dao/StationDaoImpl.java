@@ -41,7 +41,7 @@ public class StationDaoImpl implements StationDao {
 
     @Override
     public List<Station> readAll() {
-        List<Station> stations = entityManager.createQuery("select s from Station s", Station.class).getResultList();
+        List<Station> stations = entityManager.createQuery("select s from Station s order by s.stationId asc", Station.class).getResultList();
         entityManager.close();
 
         return stations;

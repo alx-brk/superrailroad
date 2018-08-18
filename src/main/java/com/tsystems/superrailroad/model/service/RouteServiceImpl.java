@@ -7,9 +7,11 @@ import com.rabbitmq.client.ConnectionFactory;
 import main.java.com.tsystems.superrailroad.model.dao.*;
 import main.java.com.tsystems.superrailroad.model.dto.*;
 import main.java.com.tsystems.superrailroad.model.entity.*;
-import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
-import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
+import main.java.com.tsystems.superrailroad.model.excep.RideException;
+import main.java.com.tsystems.superrailroad.model.excep.RouteException;
+import main.java.com.tsystems.superrailroad.model.excep.StationException;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +73,7 @@ public class RouteServiceImpl implements RouteService {
             }
             log.info("Route " + routeDto.getRouteId() + " was created");
         } else {
-            throw new CreateRouteException();
+            throw new RouteException();
         }
     }
 
@@ -138,8 +140,10 @@ public class RouteServiceImpl implements RouteService {
                 rideHasStationDao.create(rideHasStation);
             }
             log.info("Ride " + rideDto.getRideId() + " was created");
+
+            sendMessageAdd(ride);
         } else {
-            throw new CreateRideException();
+            throw new RideException();
         }
     }
 
@@ -164,16 +168,17 @@ public class RouteServiceImpl implements RouteService {
                 rideHasStationDao.update(rideHasStation);
             }
 
-            sendMessage(ride);
+            sendMessageUpdate(ride);
         } else {
-            throw new CreateRideException();
+            throw new RideException();
         }
     }
 
-    private void sendMessage(Ride ride){
+    private void sendMessageUpdate(Ride ride){
         List<RideStationDto> rideStationDtoList = getRideStationDtoList(ride);
         JSONObject messageJSON = new JSONObject();
         messageJSON.put("rideId", ride.getRideId());
+        messageJSON.put("type", "update");
         JSONObject stations = new JSONObject();
 
         for (RideStationDto rideStationDto : rideStationDtoList){
@@ -181,7 +186,35 @@ public class RouteServiceImpl implements RouteService {
         }
 
         messageJSON.put("stations", stations);
+        sendMessage(messageJSON);
+    }
 
+    private void sendMessageDelete(Ride ride){
+        JSONObject messageJSON = new JSONObject();
+        messageJSON.put("rideId", ride.getRideId());
+        messageJSON.put("type", "delete");
+        sendMessage(messageJSON);
+    }
+
+    private void sendMessageAdd(Ride ride){
+        List<RideStationDto> rideStationDtoList = getRideStationDtoList(ride);
+        JSONObject messageJSON = new JSONObject();
+        messageJSON.put("rideId", ride.getRideId());
+        messageJSON.put("type", "add");
+        JSONArray stations = new JSONArray();
+
+        for (RideStationDto rideStationDto : rideStationDtoList){
+            JSONObject station = new JSONObject();
+            station.put("station", rideStationDto.getStation());
+            station.put("time", rideStationDto.getDateTime());
+            stations.put(station);
+        }
+
+        messageJSON.put("stations", stations);
+        sendMessage(messageJSON);
+    }
+
+    private void sendMessage(JSONObject jsonObject){
         String queueName = "queue";
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("localhost");
@@ -189,7 +222,7 @@ public class RouteServiceImpl implements RouteService {
         try(Connection connection = factory.newConnection();
             Channel channel = connection.createChannel()){
             channel.exchangeDeclare(queueName, BuiltinExchangeType.FANOUT);
-            String message = messageJSON.toString();
+            String message = jsonObject.toString();
             channel.basicPublish(queueName, "", null, message.getBytes());
 
         } catch (TimeoutException e){
@@ -321,7 +354,7 @@ public class RouteServiceImpl implements RouteService {
             Calendar today = Calendar.getInstance();
             Calendar rideDay = Calendar.getInstance();
             rideDay.setTime(rideHasStation.getDeparture());
-            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR)) {
+            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR) || true) {
                 StationInfoDto stationInfoDto = new StationInfoDto();
                 Ride ride = rideHasStation.getRide();
                 stationInfoDto.setRideId(ride.getRideId());
@@ -362,5 +395,56 @@ public class RouteServiceImpl implements RouteService {
     @Transactional(readOnly = true)
     public RideDto getRideById(int rideId) {
         return mapper.map(rideDao.read(rideId), RideDto.class);
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteRide(Integer rideId) {
+        boolean result = false;
+        Ride ride = rideDao.read(rideId);
+        long countTickets = ticketDao.countByRide(ride);
+
+        if (countTickets == 0){
+            List<RideHasStation> rideHasStationList = rideHasStationDao.getStationsByRide(ride);
+            for (RideHasStation rideHasStation : rideHasStationList){
+                rideHasStationDao.delete(rideHasStation.getId());
+            }
+
+            rideDao.delete(rideId);
+            sendMessageDelete(ride);
+            result = true;
+        }
+
+        return result;
+    }
+
+    @Override
+    @Transactional
+    public void deleteStation(StationDto stationDto) {
+        Station station = stationDao.read(stationDto.getStationId());
+        if (routeHasStationDao.stationUsed(station)){
+            throw new StationException();
+        } else {
+            List<StationGraph> stationGraphList = stationGraphDao.findAllByStation(station);
+            for (StationGraph stationGraph : stationGraphList){
+                stationGraphDao.delete(stationGraph.getId());
+            }
+            stationDao.delete(stationDto.getStationId());
+        }
+    }
+
+    @Override
+    @Transactional
+    public void deleteRoute(RouteDto routeDto) {
+        Route route = routeDao.read(routeDto.getRouteId());
+        if (rideDao.routeUsed(route)){
+            throw new RouteException();
+        } else {
+            List<RouteHasStation> routeHasStationList = routeHasStationDao.getStationsByRoute(route);
+            for (RouteHasStation routeHasStation : routeHasStationList){
+                routeHasStationDao.delete(routeHasStation.getId());
+            }
+            routeDao.delete(route.getRouteId());
+        }
     }
 }

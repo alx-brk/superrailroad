@@ -3,8 +3,9 @@ package main.java.com.tsystems.superrailroad.model.service;
 import main.java.com.tsystems.superrailroad.model.dao.*;
 import main.java.com.tsystems.superrailroad.model.dto.*;
 import main.java.com.tsystems.superrailroad.model.entity.*;
-import main.java.com.tsystems.superrailroad.model.excep.CreateRideException;
-import main.java.com.tsystems.superrailroad.model.excep.CreateRouteException;
+import main.java.com.tsystems.superrailroad.model.excep.RideException;
+import main.java.com.tsystems.superrailroad.model.excep.RouteException;
+import main.java.com.tsystems.superrailroad.model.excep.StationException;
 import org.junit.Test;
 
 import javax.persistence.NoResultException;
@@ -26,7 +27,7 @@ public class RouteServiceImplTest {
     private TicketDaoImpl ticketDao = mock(TicketDaoImpl.class);
     private RouteServiceImpl routeService = new RouteServiceImpl(stationDao, routeHasStationDao, routeDao, passengerDao, rideDao, rideHasStationDao, stationGraphDao, ticketDao);
 
-    @Test(expected = CreateRouteException.class)
+    @Test(expected = RouteException.class)
     public void createRoute() {
         RouteDto routeDto = new RouteDto();
         TrainDto trainDto = new TrainDto();
@@ -55,14 +56,14 @@ public class RouteServiceImplTest {
         assertEquals(1, routeService.getAllRoutes().get(0).getRouteId());
     }
 
-    @Test(expected = CreateRideException.class)
+    @Test(expected = RideException.class)
     public void createRide() {
         RideDto rideDto = new RideDto();
         rideDto.setDeparture(new Date(0));
         routeService.createRide(rideDto);
     }
 
-    @Test(expected = CreateRideException.class)
+    @Test(expected = RideException.class)
     public void changeRide() {
         RideDto rideDto = new RideDto();
         rideDto.setDeparture(new Date(0));
@@ -177,5 +178,51 @@ public class RouteServiceImplTest {
         when(rideDao.read(1)).thenReturn(ride);
 
         assertEquals(1, routeService.getRideById(1).getRideId());
+    }
+
+    @Test
+    public void deleteRideTrue() {
+        Ride ride = new Ride();
+
+        when(rideDao.read(1)).thenReturn(ride);
+        when(ticketDao.countByRide(ride)).thenReturn(0L);
+        assertTrue(routeService.deleteRide(1));
+    }
+
+    @Test
+    public void deleteRideFalse() {
+        Ride ride = new Ride();
+
+        when(rideDao.read(1)).thenReturn(ride);
+        when(ticketDao.countByRide(ride)).thenReturn(1L);
+        assertFalse(routeService.deleteRide(1));
+    }
+
+    @Test(expected = StationException.class)
+    public void deleteStation() {
+        StationDto stationDto = new StationDto();
+        stationDto.setStationId(1);
+
+        Station station = new Station();
+        station.setStationId(1);
+
+        when(stationDao.read(1)).thenReturn(station);
+        when(routeHasStationDao.stationUsed(station)).thenReturn(true);
+
+        routeService.deleteStation(stationDto);
+    }
+
+    @Test(expected = RouteException.class)
+    public void deleteRoute() {
+        RouteDto routeDto = new RouteDto();
+        routeDto.setRouteId(1);
+
+        Route route = new Route();
+        route.setRouteId(1);
+
+        when(routeDao.read(1)).thenReturn(route);
+        when(rideDao.routeUsed(route)).thenReturn(true);
+
+        routeService.deleteRoute(routeDto);
     }
 }

@@ -30,6 +30,16 @@ public class RestApiController {
         return stationService.getConnectedStations(stationDto);
     }
 
+    @RequestMapping(value = "/admin/deleteStation", method = RequestMethod.POST, consumes = {"application/json"})
+    public void deleteStation(@RequestBody StationDto stationDto){
+        routeService.deleteStation(stationDto);
+    }
+
+    @RequestMapping(value = "/admin/deleteRoute", method = RequestMethod.POST, consumes = {"application/json"})
+    public void deleteRoute(@RequestBody RouteDto routeDto){
+        routeService.deleteRoute(routeDto);
+    }
+
     @RequestMapping(value = "/admin/getAllStations", method = RequestMethod.GET)
     public @ResponseBody List<StationDto> getAllStations(){
         return stationService.getAllStations();
