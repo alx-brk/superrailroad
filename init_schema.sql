@@ -196,21 +196,21 @@ CREATE TABLE IF NOT EXISTS `railroad`.`route_has_Station` (
     insert into `railroad`.route_has_station(route_id, station_order, station_id) values (2, 2, 4);
     insert into `railroad`.route_has_station(route_id, station_order, station_id) values (2, 3, 6);
 
-    insert into `railroad`.ride(ride_id, route_id, departure) values (1, 1, STR_TO_DATE('2018-07-19 12:00:00', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride(ride_id, route_id, departure) values (2, 1, STR_TO_DATE('2018-07-19 18:00:00', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride(ride_id, route_id, departure) values (3, 2, STR_TO_DATE('2018-07-19 15:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride(ride_id, route_id, departure) values (1, 1, STR_TO_DATE('2018-08-22 12:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride(ride_id, route_id, departure) values (2, 1, STR_TO_DATE('2018-08-22 18:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride(ride_id, route_id, departure) values (3, 2, STR_TO_DATE('2018-08-22 15:00:00', '%Y-%m-%d %H:%i:%S'));
 
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 3, 0.00, STR_TO_DATE('2018-07-19 12:00:00', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 1, 136.00, STR_TO_DATE('2018-07-19 13:04:45', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 2, 27.10, STR_TO_DATE('2018-07-19 13:17:39', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 4, 30.40, STR_TO_DATE('2018-07-19 13:32:07', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 3, 0.00, STR_TO_DATE('2018-07-19 18:00:00', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 1, 136.00, STR_TO_DATE('2018-07-19 19:04:45', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 2, 27.10, STR_TO_DATE('2018-07-19 19:17:39', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 4, 30.40, STR_TO_DATE('2018-07-19 19:32:07', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 5, 0.00, STR_TO_DATE('2018-07-19 15:00:00', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 4, 102.40, STR_TO_DATE('2018-07-19 16:11:06', '%Y-%m-%d %H:%i:%S'));
-    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 6, 195.20, STR_TO_DATE('2018-07-19 18:26:39', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 3, 0.00, STR_TO_DATE('2018-08-22 12:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 1, 136.00, STR_TO_DATE('2018-08-22 13:04:45', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 2, 27.10, STR_TO_DATE('2018-08-22 13:17:39', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (1, 4, 30.40, STR_TO_DATE('2018-08-22 13:32:07', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 3, 0.00, STR_TO_DATE('2018-08-22 18:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 1, 136.00, STR_TO_DATE('2018-08-22 19:04:45', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 2, 27.10, STR_TO_DATE('2018-08-22 19:17:39', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (2, 4, 30.40, STR_TO_DATE('2018-08-22 19:32:07', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 5, 0.00, STR_TO_DATE('2018-08-22 15:00:00', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 4, 102.40, STR_TO_DATE('2018-08-22 16:11:06', '%Y-%m-%d %H:%i:%S'));
+    insert into `railroad`.ride_has_station(ride_id, station_id, price, departure) values (3, 6, 195.20, STR_TO_DATE('2018-08-22 18:26:39', '%Y-%m-%d %H:%i:%S'));
 
     insert into `railroad`.passenger(passenger_id, first_name, last_name, birthdate) values (1, 'Alexey', 'Bobrik', STR_TO_DATE('1990-05-13', '%Y-%m-%d'));
     insert into `railroad`.passenger(passenger_id, first_name, last_name, birthdate) values (2, 'Chuck', 'Norris', STR_TO_DATE('1940-03-10', '%Y-%m-%d'));

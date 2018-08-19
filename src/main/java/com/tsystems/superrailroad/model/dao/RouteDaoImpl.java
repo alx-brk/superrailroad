@@ -1,7 +1,6 @@
 package main.java.com.tsystems.superrailroad.model.dao;
 
 import main.java.com.tsystems.superrailroad.model.entity.Route;
-import main.java.com.tsystems.superrailroad.model.entity.Station;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;

@@ -71,7 +71,7 @@ public class RouteServiceImpl implements RouteService {
                 routeHasStation.setRoute(route);
                 routeHasStationDao.create(routeHasStation);
             }
-            log.info("Route " + routeDto.getRouteId() + " was created");
+            log.info("Route " + route.getRouteId() + " was created");
         } else {
             throw new RouteException();
         }
@@ -139,7 +139,7 @@ public class RouteServiceImpl implements RouteService {
                 rideHasStation.setStation(routeHasStation.getStation());
                 rideHasStationDao.create(rideHasStation);
             }
-            log.info("Ride " + rideDto.getRideId() + " was created");
+            log.info("Ride " + ride.getRideId() + " was created");
 
             sendMessageAdd(ride);
         } else {
@@ -225,9 +225,7 @@ public class RouteServiceImpl implements RouteService {
             String message = jsonObject.toString();
             channel.basicPublish(queueName, "", null, message.getBytes());
 
-        } catch (TimeoutException e){
-            log.error(e);
-        } catch (IOException e){
+        } catch (TimeoutException|IOException e){
             log.error(e);
         }
     }
@@ -293,7 +291,7 @@ public class RouteServiceImpl implements RouteService {
                 passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate());
                 return false;
             } catch (NoResultException e) {
-
+                // this is fine
             }
             passenger.setFirstName(passengerDto.getFirstName());
             passenger.setLastName(passengerDto.getLastName());
@@ -354,7 +352,7 @@ public class RouteServiceImpl implements RouteService {
             Calendar today = Calendar.getInstance();
             Calendar rideDay = Calendar.getInstance();
             rideDay.setTime(rideHasStation.getDeparture());
-            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR) || true) {
+            if (today.get(Calendar.YEAR) == rideDay.get(Calendar.YEAR) && today.get(Calendar.DAY_OF_YEAR) == rideDay.get(Calendar.DAY_OF_YEAR)) {
                 StationInfoDto stationInfoDto = new StationInfoDto();
                 Ride ride = rideHasStation.getRide();
                 stationInfoDto.setRideId(ride.getRideId());
@@ -413,6 +411,7 @@ public class RouteServiceImpl implements RouteService {
             rideDao.delete(rideId);
             sendMessageDelete(ride);
             result = true;
+            log.info("Ride " + rideId + " was deleted");
         }
 
         return result;
@@ -430,6 +429,7 @@ public class RouteServiceImpl implements RouteService {
                 stationGraphDao.delete(stationGraph.getId());
             }
             stationDao.delete(stationDto.getStationId());
+            log.info("Station " + stationDto.getName() + " was deleted");
         }
     }
 
@@ -445,6 +445,7 @@ public class RouteServiceImpl implements RouteService {
                 routeHasStationDao.delete(routeHasStation.getId());
             }
             routeDao.delete(route.getRouteId());
+            log.info("Route " + route.getRouteId() + " was deleted");
         }
     }
 }
