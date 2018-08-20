@@ -286,6 +286,7 @@ public class RouteServiceImpl implements RouteService {
                 || passengerDto.getBirthDate().after(new Date())){
             return false;
         } else {
+
             Passenger passenger = new Passenger();
             try {
                 passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate());
@@ -298,14 +299,20 @@ public class RouteServiceImpl implements RouteService {
             passenger.setBirthDate(passengerDto.getBirthDate());
 
             Ride ride = rideDao.read(passengerDto.getRideId());
+            int ticketsCount = (int) ticketDao.countByRide(ride);
+            int capacity = ride.getRoute().getTrain().getCapacity();
 
-            Ticket ticket = new Ticket();
-            ticket.setPassenger(passenger);
-            ticket.setRide(ride);
+            if (ticketsCount < capacity) {
+                Ticket ticket = new Ticket();
+                ticket.setPassenger(passenger);
+                ticket.setRide(ride);
 
-            ticketDao.create(ticket);
-            log.info(passengerDto.getFirstName() + " " + passengerDto.getLastName() + " bought ticket to ride " + ride.getRideId());
-            return true;
+                ticketDao.create(ticket);
+                log.info(passengerDto.getFirstName() + " " + passengerDto.getLastName() + " bought ticket to ride " + ride.getRideId());
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

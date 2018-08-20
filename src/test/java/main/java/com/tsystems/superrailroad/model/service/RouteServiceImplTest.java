@@ -115,14 +115,47 @@ public class RouteServiceImplTest {
         passengerDto.setLastName("ololo");
         passengerDto.setBirthDate(new Date(0));
         passengerDto.setRideId(1);
+        Train train = new Train();
+        train.setCapacity(2);
+        Route route = new Route();
+        route.setTrain(train);
+        Ride ride = new Ride();
+        ride.setRideId(1);
+        ride.setRoute(route);
+
 
         when(passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate())).thenThrow(NoResultException.class);
-        when(rideDao.read(passengerDto.getRideId())).thenReturn(new Ride());
+        when(rideDao.read(passengerDto.getRideId())).thenReturn(ride);
+        when(ticketDao.countByRide(ride)).thenReturn(1L);
         assertTrue(routeService.buyTicket(passengerDto));
     }
 
+
+
     @Test
-    public void buyTicketFalse() {
+    public void buyTicketFalse1() {
+        PassengerDto passengerDto = new PassengerDto();
+        passengerDto.setFirstName("ololo");
+        passengerDto.setLastName("ololo");
+        passengerDto.setBirthDate(new Date(0));
+        passengerDto.setRideId(1);
+        Train train = new Train();
+        train.setCapacity(2);
+        Route route = new Route();
+        route.setTrain(train);
+        Ride ride = new Ride();
+        ride.setRideId(1);
+        ride.setRoute(route);
+
+
+        when(passengerDao.find(passengerDto.getFirstName(), passengerDto.getLastName(), passengerDto.getBirthDate())).thenThrow(NoResultException.class);
+        when(rideDao.read(passengerDto.getRideId())).thenReturn(ride);
+        when(ticketDao.countByRide(ride)).thenReturn(3L);
+        assertFalse(routeService.buyTicket(passengerDto));
+    }
+
+    @Test
+    public void buyTicketFalse2() {
         PassengerDto passengerDto = new PassengerDto();
         assertFalse(routeService.buyTicket(passengerDto));
     }
